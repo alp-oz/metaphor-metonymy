@@ -1,12 +1,8 @@
-# figurative-geometry
 
-## Geometric signatures of metaphor and metonymy 
-## in multilingual embedding space
+## The geometry of figurative language: metaphor, metonymy 
+## and multilingual embeddings
 
-**Alperen Özdemir**, KTH Royal Institute of Technology  
-alpereno@kth.se · github.com/alp-oz
-
----
+**Alperen Özdemir**
 
 ## Abstract
 
