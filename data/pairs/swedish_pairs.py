@@ -1,0 +1,61 @@
+DEAD_METONYMY = [
+    ("läsa en Strindberg",    "läsa en roman av Strindberg"),
+    ("dricka ett Bordeaux",   "dricka ett vin från Bordeaux"),
+    ("lyssna på en Chopin",   "lyssna på ett stycke av Chopin"),
+    ("köra en Volvo",         "köra en Volvo-bil"),
+    ("dricka en flaska",      "dricka alkohol ur en flaska"),
+    ("tömma glaset",          "dricka vad som finns i glaset"),
+    ("äta en tallrik",        "äta vad som finns på tallriken"),
+    ("kaffepannan kokar",     "vattnet i kaffepannan kokar"),
+    ("läsa en ABBA-skiva",    "lyssna på ABBA-musik"),
+    ("dricka en whisky",      "dricka skotsk whisky"),
+]
+
+LIVE_METONYMY = [
+    ("pennan",       "författaren"),
+    ("scenen",       "teatern"),
+    ("stolen",       "makten"),
+    ("kronan",       "monarkin"),
+    ("flaskan",      "alkoholen"),
+    ("bordet",       "maten"),
+    ("mikrofonen",   "sångaren"),
+    ("penseln",      "målaren"),
+    ("rodret",       "kaptenen"),
+    ("talarstolen",  "politikern"),
+]
+
+DEAD_METAPHOR = [
+    ("bergets fot",          "bergets bas"),
+    ("bordets ben",          "bordets stöd"),
+    ("flodens mynning",      "där floden möter havet"),
+    ("stadens hjärta",       "stadens centrum"),
+    ("flaskans hals",        "den smala övre delen av flaskan"),
+    ("fåtöljens armstöd",    "sidostödet på fåtöljen"),
+    ("nålens öga",           "hålet i nålen"),
+    ("skotunga",             "fliken under snörningen"),
+    ("bokens baksida",       "bokens bakre omslag"),
+    ("bokens rygg",          "bindningskanten på boken"),
+    ("urtavlan",             "urtavlans yta"),
+    ("vägens axel",          "vägens kant"),
+    ("kullens krön",         "kullens topp"),
+    ("skeppets buk",         "skeppets nedre lastrum"),
+    ("kammens tänder",       "kammens spetsar"),
+]
+
+LIVE_METAPHOR = [
+    ("kinder",    "äpplen"),
+    ("tid",       "pengar"),
+    ("argument",  "krig"),
+    ("livet",     "resa"),
+    ("sinnet",    "maskin"),
+    ("kärlek",    "eld"),
+    ("ilska",     "värme"),
+    ("idéer",     "frön"),
+    ("samhället", "organism"),
+    ("ord",       "vapen"),
+    ("hjärtat",   "sten"),
+    ("hoppet",    "ljus"),
+    ("sorg",      "tyngd"),
+    ("kunskap",   "föda"),
+    ("minnet",    "lagring"),
+]
