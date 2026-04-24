@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Data files
+*.parquet
+*.csv
+
+# Intermediate / scratch plots at root level
+*.png
+
+# Keep results/figures/
+!results/figures/*.png
