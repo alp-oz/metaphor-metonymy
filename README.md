@@ -22,18 +22,16 @@ semantic proximity in distributional representations while
 cross-domain similarity produces distance. Conventionalization 
 dominates over structural type: the dead/live gradient is 
 approximately three times larger than the metonymy/metaphor 
-gradient. We show that this effect survives controls for 
-word frequency and phrase-length confounds (mixed-effects 
-regression, ICC≈0 across languages), survives anisotropy 
-correction including full whitening, and is corroborated by 
-second-order neighbor structure. A contextual token-level 
-analysis on English confirms that carrier-sentence 
-contextualization preserves the category ordering while 
-attenuating pair similarity uniformly. We interpret these 
-findings as evidence that standard multilingual embeddings 
-encode the lifecycle of figurative language more reliably 
-than its structural type, but that the structural signal is 
-real, robust, and not reducible to distributional confounds.
+gradient.
+
+The effect survives word frequency and phrase-length 
+controls, anisotropy correction including full whitening, 
+and is corroborated by second-order neighbor structure. 
+Contextualization attenuates pair similarity uniformly 
+but preserves the ordering; live metonymy shows the 
+largest contextual drop, suggesting its bare-term 
+advantage is partly distributional. The structural signal 
+is real, robust, and not reducible to known confounds.
 
 ---
 
