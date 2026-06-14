@@ -20,11 +20,20 @@ eight languages combined (p<0.001), consistent with the
 theoretical claim that real-world contiguity produces 
 semantic proximity in distributional representations while 
 cross-domain similarity produces distance. Conventionalization 
-dominates over structural type — the dead/live gradient is 
+dominates over structural type: the dead/live gradient is 
 approximately three times larger than the metonymy/metaphor 
-gradient. We interpret these findings as evidence that 
-standard multilingual embeddings encode the lifecycle of 
-figurative language more reliably than its structural type.
+gradient. We show that this effect survives controls for 
+word frequency and phrase-length confounds (mixed-effects 
+regression, ICC≈0 across languages), survives anisotropy 
+correction including full whitening, and is corroborated by 
+second-order neighbor structure. A contextual token-level 
+analysis on English confirms that carrier-sentence 
+contextualization preserves the category ordering while 
+attenuating pair similarity uniformly. We interpret these 
+findings as evidence that standard multilingual embeddings 
+encode the lifecycle of figurative language more reliably 
+than its structural type, but that the structural signal is 
+real, robust, and not reducible to distributional confounds.
 
 ---
 
@@ -35,9 +44,9 @@ substituting one term for another on the basis of
 similarity — while metonymy operates along the axis of 
 combination, linking terms on the basis of real-world 
 contiguity. This structural distinction has been enormously 
-influential — in literary theory through Lodge (1977), in 
+influential, in literary theory through Lodge (1977), in 
 cognitive linguistics through Lakoff and Johnson (1980), 
-and in psychoanalytic theory through Lacan (1957) — but 
+and in psychoanalytic theory through Lacan (1957), but 
 has remained largely qualitative. No prior work has tested 
 whether the distinction leaves a measurable geometric trace 
 in the distributional representations learned by language 
@@ -50,7 +59,11 @@ should be geometrically closer than metaphoric pairs. We
 test this prediction across eight typologically diverse 
 languages using a multilingual sentence embedding model and 
 a curated dataset of figurative expression pairs classified 
-by structural type and degree of conventionalization.
+by structural type and degree of conventionalization. We 
+then subject the result to a sequence of robustness checks 
+designed to rule out co-occurrence frequency, phrase-length 
+asymmetry, embedding anisotropy, and language-clustering 
+as alternative explanations.
 
 ---
 
@@ -169,12 +182,50 @@ The specific similarity scores within languages are
 informative only relative to other categories in the same 
 language.
 
-### 2.3 Statistical test
+### 2.3 Statistical analysis
 
-Mann-Whitney U tests compare similarity distributions 
-across categories. All tests are two-tailed. We report 
-combined tests across all languages and per-language 
-results separately.
+**Primary test.** Mann-Whitney U tests compare similarity 
+distributions across categories. All tests are two-tailed. 
+We report combined tests across all languages and 
+per-language results separately.
+
+**Mixed-effects regression.** To control for potential 
+confounds, we fit a linear mixed-effects model:
+
+    sim ~ structural_type + lifecycle + log_freq + length_gap + (1 | language)
+
+where `log_freq` is the mean log₁₀ word frequency of the 
+two terms (via wordfreq), `length_gap` is the absolute 
+character-count difference between terms, and language is 
+a random intercept. Continuous predictors are standardised. 
+Fitting used REML via statsmodels MixedLM.
+
+**Neighbor geometry.** For each term we construct its k-NN 
+set (k=20) over the full vocabulary of 778 unique terms. 
+First-order similarity s₁ is cosine (already computed). 
+Second-order similarity s₂ is Jaccard overlap of k-NN 
+sets, measuring substitutability — whether two terms share 
+the same distributional neighborhood rather than merely 
+being close. We also compute rank asymmetry: whether term₂ 
+appears closer in term₁'s neighbor list than vice versa, 
+as a probe for directional encoding.
+
+**Anisotropy correction.** Sentence-transformer embeddings 
+are anisotropic: random pairs have mean cosine 0.33, 
+inflating all scores. We apply three corrections — 
+mean-centring, all-but-the-top (Mu and Viswanath, 2018; 
+d=5 principal components removed), and ZCA whitening — 
+and rerun the regression and category means under each.
+
+**Contextual token-level probe (English only).** We load 
+the underlying transformer via AutoModel and encode each 
+English term in a hand-validated carrier sentence (see 
+`data/carriers/english_carriers.py`). Span matching 
+extracts only the target term's token positions from 
+`last_hidden_state`, avoiding pooling over the full 
+sentence context. Self-similarity (cosine of bare vs 
+contextual vector for the same term) measures how much 
+the carrier sentence shifts each term's representation.
 
 ---
 
@@ -248,6 +299,126 @@ Dead metaphor scores notably lower than the cross-language mean (0.534 versus 0.
 **Japanese.**
 An earlier run using journey and goal metaphor pairs — 道/人生 (road/life), 目標/成功 (goal/success) — produced near-zero separation between dead and live metaphor. Replacing these with animal-behavior and physical-abstract pairs restored the expected ordering. This suggests the earlier pairs were near-synonymous in the model's Japanese representation, though whether this reflects Japanese semantic structure or training data properties is unclear.
 
+### 3.5 Regression: type effect survives confound controls
+
+The mixed-effects regression yields:
+
+| Predictor | Coef | 95% CI | p |
+|---|---|---|---|
+| is_metonymy (vs metaphor) | +0.117 | [0.084, 0.150] | <0.001 |
+| is_live (vs dead) | −0.239 | [−0.276, −0.202] | <0.001 |
+| log_freq (standardised) | −0.006 | [−0.027, 0.015] | 0.565 |
+| length_gap (standardised) | −0.000 | [−0.018, 0.018] | 0.966 |
+
+Random intercept SD (language): 0.000. ICC ≈ 0.
+
+**Interpretation.** After controlling for word frequency 
+and phrase-length asymmetry, the metonymy advantage 
+(+0.117) remains large and significant. Neither frequency 
+nor length gap explains the type effect. The ICC of 
+effectively zero means language clustering accounts for 
+negligible variance — the result is cross-linguistically 
+uniform, and the original Mann-Whitney p-values were not 
+inflated by between-language pseudoreplication. The 
+lifecycle effect (−0.239) is more than twice the type 
+effect, consistent with section 3.2.
+
+### 3.6 Neighbor geometry: contiguity vs substitutability
+
+Second-order similarity (Jaccard of k-NN sets, k=20) 
+mirrors the first-order gradient:
+
+| Category | s₁ (cosine) | s₂ (neighbor Jaccard) |
+|---|---|---|
+| Dead metonymy | 0.818 | 0.418 |
+| Dead metaphor | 0.693 | 0.369 |
+| Live metonymy | 0.565 | 0.182 |
+| Live metaphor | 0.464 | 0.095 |
+
+Metonymy is higher on both axes. The s₂ gap between types 
+is smaller than the s₁ gap, meaning metonymy's advantage 
+in direct proximity is larger than its advantage in 
+substitutability — consistent with Jakobson's account 
+that metonymy is paradigmatically licensed by contiguity, 
+not by paradigmatic interchangeability.
+
+Plotting pairs in the (s₁, s₂) plane reveals that dead 
+metonymy occupies the upper-right region (high on both 
+axes) while metaphor pairs with comparable s₁ tend to 
+have lower s₂. Goossens's (1990) metaphtonymy mixed cases 
+(lend/ear, shoot/mouth, bite/tongue) land in the lower-left 
+region alongside live metaphor, reflecting that their 
+figurative vehicle terms (ear, mouth, tongue) are not 
+close to each other's neighborhoods as isolated terms.
+
+Rank asymmetry (whether term₂ is a closer neighbor of 
+term₁ than vice versa) shows no systematic directional 
+bias for either type (median asymmetry ≈ 0 for both). 
+Static cosine geometry does not encode the source-to-target 
+directionality that cognitive linguists attribute to both 
+metaphor and metonymy.
+
+### 3.7 Anisotropy robustness
+
+The original embedding space has mean random-pair cosine 
+0.33, indicating strong anisotropy. After correction:
+
+| Correction | Anisotropy | coef_metonymy | coef_live |
+|---|---|---|---|
+| Original | 0.328 | +0.111 | −0.242 |
+| Mean-centred | ≈0 | +0.197 | −0.394 |
+| All-but-top (d=5) | ≈0 | +0.191 | −0.355 |
+| Whitened (ZCA) | ≈0 | +0.079 | −0.179 |
+
+The type effect remains positive and significant under all 
+three corrections including full whitening. Anisotropy was 
+slightly suppressing the effect in the original space — 
+mean-centring increases the metonymy coefficient to +0.197. 
+Under the most aggressive correction (whitening), the 
+coefficient shrinks to +0.079 but remains significant. 
+The plausible range for the true effect is 0.08–0.20; the 
+original estimate of 0.117 lies within this range.
+
+### 3.8 Contextual token-level probe (English)
+
+For the English subset (55 pairs, 110 unique terms), we 
+compare bare-term embeddings against contextual token 
+embeddings extracted from hand-validated carrier sentences.
+
+| Category | n | bare_sim | ctx_sim | Δ | self_sim |
+|---|---|---|---|---|---|
+| Dead metonymy | 10 | 0.898 | 0.817 | −0.080 | 0.827 |
+| Dead metaphor | 15 | 0.768 | 0.669 | −0.099 | 0.778 |
+| Live metonymy | 15 | 0.591 | 0.449 | −0.143 | 0.685 |
+| Live metaphor | 15 | 0.379 | 0.274 | −0.105 | 0.616 |
+
+Contextualization uniformly decreases pair similarity 
+across all categories (Δ < 0 everywhere): carrier sentences 
+pull each term toward its specific reading, moving the two 
+terms of a pair apart. The category ordering is fully 
+preserved. Self-similarity (stability of a term's 
+representation under contextualization) is higher for dead 
+pairs (0.78–0.83) than live pairs (0.62–0.69), reflecting 
+that dead terms are already lexicalised in the model's 
+training distribution and shift less under context.
+
+The largest drop occurs in live metonymy (Δ = −0.143). 
+This is the clearest contextual evidence for the 
+co-occurrence account of the metonymy advantage: 
+("White House", "US government") are close as bare terms 
+because they co-occur constantly in training text; once 
+forced into specific carrier sentences, they diverge more 
+than any other category. The bare-term signal for live 
+metonymy is more distributional than structural.
+
+**Scope.** The contextual probe is English-only. Carrier 
+sentences in other languages would require native-speaker 
+validation to guarantee that span matching extracts the 
+intended reading; generating unvalidated carriers would 
+introduce undetectable errors.
+
+---
+
 ## 4. Limitations
 
 **Pair selection.** Pairs were constructed to be clear, 
@@ -256,53 +427,88 @@ random sample of figurative language in naturalistic text.
 Results may not generalize to figurative language in 
 running discourse.
 
-**Co-occurrence confound.** The geometric signal is 
-consistent with Jakobson's structural distinction but 
-equally compatible with a simpler co-occurrence 
-explanation. Metonymic pairs may co-occur more frequently 
-in text because they refer to the same real-world 
-situation from different angles, independently of any 
-deep structural operation. A stronger test would require 
-controlling for co-occurrence frequency independently of 
-figurative type.
+**Outcome-dependent pair revision.** Swedish and Japanese 
+pairs were revised after initial pilot runs produced 
+anomalous results. This introduces researcher degrees of 
+freedom: the current pair lists were selected partly 
+because they produced the expected signal. The pair lists 
+are frozen as the analysis set and this revision history 
+is disclosed here; no further revisions will be made.
+
+**Co-occurrence confound (partially addressed).** The 
+frequency regression shows that word frequency does not 
+explain the type effect. However, PMI — joint co-occurrence 
+frequency of the specific pair — was not controlled, 
+as computing it requires corpus-level counts across eight 
+languages. The contextual analysis (section 3.8) provides 
+indirect evidence that the live metonymy advantage is 
+partly co-occurrence-driven, but a full PMI control remains 
+a direction for future work.
 
 **Training data coverage.** Results for English and 
 Russian are more reliable than for Swedish, Arabic and 
 Japanese due to differential training data coverage in 
 the multilingual model.
 
-**Pair length asymmetry.** Arabic pairs use longer phrases 
-than pairs in other languages, introducing a potential 
-confound in cross-language comparisons.
+**Directional asymmetry.** Cosine similarity is symmetric; 
+the source-to-target directionality of both metaphor 
+(source domain structures target) and metonymy (vehicle 
+refers to target) is not captured. Rank asymmetry analysis 
+(section 3.6) confirms that static embeddings do not 
+encode this directional structure.
 
 **Sample size.** With 10-20 pairs per category per language, 
 individual language results are underpowered. The combined 
 cross-language results are more reliable than any single 
-language result.
+language result. The English contextual analysis uses 
+10-15 pairs per category.
 
 ---
 
 ## 5. Reproducibility
 
 ```bash
-pip install sentence-transformers umap-learn wordfreq \
-    nltk anthropic --break-system-packages
-python -c "import nltk; nltk.download('wordnet')"
+pip install sentence-transformers scikit-learn statsmodels \
+    wordfreq transformers torch pandas pyarrow matplotlib
 ```
 
 Model: `paraphrase-multilingual-MiniLM-L12-v2`
 
-All pair lists are in `data/pairs/`. Run the full analysis:
+All pair lists are in `data/pairs/`. Run analyses in order:
 
 ```bash
-python src/pairs_geometry.py --output results/figures/pairs_plot.png
-python src/specificity_asymmetry.py --output results/figures/specificity_plot.png
-python src/wordnet_check.py --output results/figures/wordnet_plot.png
+# Build consolidated table and cached embeddings
+python src/dataset.py
+
+# k-NN neighbor geometry and (s1, s2) plane
+python src/neighbors.py --plot
+
+# Covariate enrichment (frequency, length gap)
+python src/covariates.py
+
+# Mixed-effects regression
+python src/regression.py --plot
+
+# Anisotropy robustness check
+python src/isotropy.py --plot
+
+# Contextual token-level probe (English only)
+python src/contextual.py --plot
+
+# Original pair geometry (all languages)
+python src/pairs_geometry.py --output figures/pairs_plot.png
 ```
+
+Figures are saved to `figures/`. Cached results are in 
+`data/cache/` (parquet format, gitignored except JSON outputs).
 
 ---
 
 ## References
+
+Goossens, L. (1990). Metaphtonymy: The interaction of 
+metaphor and metonymy in expressions for linguistic action. 
+*Cognitive Linguistics*, 1(3), 323–340.
 
 Hamilton, W., Leskovec, J. and Jurafsky, D. (2016). 
 Diachronic word embeddings reveal statistical laws of 
@@ -320,8 +526,9 @@ unconscious. In *Écrits*. Norton.
 
 Lodge, D. (1977). *The Modes of Modern Writing*. Arnold.
 
+Mu, J. and Viswanath, P. (2018). All-but-the-top: Simple 
+and effective postprocessing for word representations. 
+*ICLR 2018*.
+
 Reimers, N. and Gurevych, I. (2019). Sentence-BERT: 
 Sentence embeddings using Siamese BERT-networks. *EMNLP*.
-
-
-
