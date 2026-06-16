@@ -303,16 +303,18 @@ The mixed-effects regression yields:
 
 | Predictor | Coef | 95% CI | p |
 |---|---|---|---|
-| is_metonymy (vs metaphor) | +0.117 | [0.084, 0.150] | <0.001 |
+| is_metonymy (vs metaphor) | +0.098 | [0.066, 0.130] | <0.001 |
 | is_live (vs dead) | −0.239 | [−0.276, −0.202] | <0.001 |
 | log_freq (standardised) | −0.006 | [−0.027, 0.015] | 0.565 |
 | length_gap (standardised) | −0.000 | [−0.018, 0.018] | 0.966 |
+| jaccard (standardised) | +0.074 | [0.053, 0.096] | <0.001 |
 
 Random intercept SD (language): 0.000. ICC ≈ 0.
 
-**Interpretation.** After controlling for word frequency 
-and phrase-length asymmetry, the metonymy advantage 
-(+0.117) remains large and significant. Neither frequency 
+**Interpretation.** After controlling for word frequency,
+phrase-length asymmetry, and token-level surface overlap,
+the metonymy advantage (+0.098) remains large and
+significant. Neither frequency 
 nor length gap explains the type effect. The ICC of 
 effectively zero means language clustering accounts for 
 negligible variance — the result is cross-linguistically 
@@ -442,6 +444,17 @@ languages. The contextual analysis (section 3.8) provides
 indirect evidence that the live metonymy advantage is 
 partly co-occurrence-driven, but a full PMI control remains 
 a direction for future work.
+
+**Surface-form overlap.** Token-level Jaccard overlap
+between the two terms in a pair correlates with cosine
+similarity (r = 0.58) but is near-orthogonal to structural
+category (r = 0.08). Including it as a covariate in the
+mixed-effects model reduces the metonymy coefficient by
+approximately 16% (0.117 to 0.098) while it remains
+significant at p < 0.0001. Lexical overlap is therefore
+not the source of the effect. Pair selection and
+co-occurrence frequency remain separate, disclosed
+limitations.
 
 **Training data coverage.** Results for English and 
 Russian are more reliable than for Swedish, Arabic and 
