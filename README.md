@@ -10,8 +10,8 @@ We test whether Jakobson's (1956) structural distinction
 between metaphor and metonymy leaves measurable geometric 
 signatures in multilingual embedding space. Using curated 
 pairs of figurative expressions across eight typologically 
-diverse languages — English, French, Turkish, Russian, 
-Swedish, German, Arabic and Japanese — we compute cosine 
+diverse languages (English, French, Turkish, Russian, 
+Swedish, German, Arabic and Japanese), we compute cosine 
 similarity between independently embedded terms and compare 
 distributions across four categories: live metonymy, live 
 metaphor, dead metonymy and dead metaphor. Metonymic pairs 
@@ -37,9 +37,9 @@ is real, robust, and not reducible to known confounds.
 
 ## 1. Introduction
 
-Jakobson (1956) argued that metaphor operates along the axis of selection — 
+Jakobson (1956) argued that metaphor operates along the axis of selection, 
 substituting one term for another on the basis of 
-similarity — while metonymy operates along the axis of 
+similarity, while metonymy operates along the axis of 
 combination, linking terms on the basis of real-world 
 contiguity. This structural distinction has been enormously 
 influential, in literary theory through Lodge (1977), in 
@@ -78,7 +78,7 @@ to 384-dimensional vectors and covers 50+ languages in a
 shared embedding space.
 
 For each pair (term₁, term₂) we encode each term 
-**independently** — not together in one sentence — producing 
+**independently** (not together in one sentence), producing 
 two 384-dimensional vectors v₁ and v₂. We then compute 
 cosine similarity:
 
@@ -90,8 +90,8 @@ A score of 0 means they share no distributional structure.
 Scores in our dataset range from approximately 0.1 to 0.98.
 
 The model was trained to make paraphrases close in embedding 
-space. Highly conventionalized pairs — where one term 
-functions as a near-paraphrase of the other in context — 
+space. Highly conventionalized pairs, where one term 
+functions as a near-paraphrase of the other in context, 
 will therefore score high. This is relevant to the 
 interpretation of dead figure scores below.
 
@@ -103,30 +103,30 @@ Swedish, German, Arabic and Japanese. Pairs were classified
 into four categories based on Jakobson's structural 
 distinction and the linguistic notion of conventionalization:
 
-**Live metonymy** — institutionalized substitutions where 
+**Live metonymy:** institutionalized substitutions where 
 a specific term stands for a related entity through 
 real-world contiguity. The contiguity relation is active 
 and culturally current.
 
 Examples:
 - EN: ("White House", "US government")
-- FR: ("la plume", "l'écrivain") — pen for writer
-- TR: ("Köşk", "cumhurbaşkanlığı") — presidential palace
+- FR: ("la plume", "l'écrivain") [pen for writer]
+- TR: ("Köşk", "cumhurbaşkanlığı") [presidential palace]
 - RU: ("Кремль", "российское правительство")
-- JA: ("永田町", "日本の政府") — Nagatacho for government
+- JA: ("永田町", "日本の政府") [Nagatacho for government]
 
-**Live metaphor** — cross-domain mappings where similarity 
+**Live metaphor:** cross-domain mappings where similarity 
 licenses substitution. The source and target domains are 
 semantically distant.
 
 Examples:
 - EN: ("time", "money")
-- FR: ("la vie", "un voyage") — life is a journey
-- TR: ("aşk", "ateş") — love is fire
-- AR: ("البركان", "الغضب الشديد") — volcano for anger
-- JA: ("狐", "狡猾さ") — fox for cunning
+- FR: ("la vie", "un voyage") [life is a journey]
+- TR: ("aşk", "ateş") [love is fire]
+- AR: ("البركان", "الغضب الشديد") [volcano for anger]
+- JA: ("狐", "狡猾さ") [fox for cunning]
 
-**Dead metonymy** — conventionalized producer-for-product 
+**Dead metonymy:** conventionalized producer-for-product 
 substitutions where the proper noun has fused with its 
 product category through repeated use.
 
@@ -136,7 +136,7 @@ Examples:
 - DE: ("einen Goethe lesen", "ein Werk von Goethe lesen")
 - JA: ("夏目漱石を読む", "夏目漱石の小説を読む")
 
-**Dead metaphor** — body-part or physical-object extensions 
+**Dead metaphor:** body-part or physical-object extensions 
 now perceived as literal in everyday usage.
 
 Examples:
@@ -151,7 +151,7 @@ French native pairs were constructed using idiomatic
 French expressions from standard reference works rather 
 than translated from English. Turkish pairs were verified 
 by a native speaker. Arabic pairs use fuller phrases rather 
-than single words to provide sufficient embedding context — 
+than single words to provide sufficient embedding context; 
 single Arabic words were found to produce compressed, 
 underdiscriminating embeddings in pilot testing. Japanese 
 metaphor pairs use animal-behavior and physical-abstract 
@@ -165,17 +165,17 @@ Differences in mean similarity across languages should not
 be interpreted as reflecting genuine linguistic differences. 
 They reflect a combination of three confounds:
 
-1. Training data coverage — the model has seen vastly more 
+1. Training data coverage: the model has seen vastly more 
    English and Russian than Swedish, Arabic or Japanese
-2. Pair construction differences — Arabic pairs use longer 
+2. Pair construction differences: Arabic pairs use longer 
    phrases than English pairs, affecting embedding geometry
-3. Domain selection — pairs were chosen to be clear 
+3. Domain selection: pairs were chosen to be clear 
    instances of each category, not matched for topic or 
    register across languages
 
 Cross-language magnitude comparisons are therefore not 
-meaningful. The directional claim — metonymy closer than 
-metaphor, dead closer than live — is the robust finding. 
+meaningful. The directional claim (metonymy closer than 
+metaphor, dead closer than live) is the robust finding. 
 The specific similarity scores within languages are 
 informative only relative to other categories in the same 
 language.
@@ -202,7 +202,7 @@ Fitting used REML via statsmodels MixedLM.
 set (k=20) over the full vocabulary of 778 unique terms. 
 First-order similarity s₁ is cosine (already computed). 
 Second-order similarity s₂ is Jaccard overlap of k-NN 
-sets, measuring substitutability — whether two terms share 
+sets, measuring substitutability: whether two terms share 
 the same distributional neighborhood rather than merely 
 being close. We also compute rank asymmetry: whether term₂ 
 appears closer in term₁'s neighbor list than vice versa, 
@@ -210,9 +210,9 @@ as a probe for directional encoding.
 
 **Anisotropy correction.** Sentence-transformer embeddings 
 are anisotropic: random pairs have mean cosine 0.33, 
-inflating all scores. We apply three corrections — 
-mean-centring, all-but-the-top (Mu and Viswanath, 2018; 
-d=5 principal components removed), and ZCA whitening — 
+inflating all scores. We apply three corrections 
+(mean-centring, all-but-the-top [Mu and Viswanath, 2018; 
+d=5 principal components removed], and ZCA whitening) 
 and rerun the regression and category means under each.
 
 **Contextual token-level probe (English only).** We load 
@@ -229,7 +229,7 @@ the carrier sentence shifts each term's representation.
 
 ## 3. Results
 
-### 3.1 Main result — metonymy versus metaphor
+### 3.1 Main result: metonymy versus metaphor
 
 Combining live and dead pairs within each structural type 
 across all eight languages:
@@ -239,8 +239,8 @@ across all eight languages:
 | Metonymy | 0.677 | 180 |
 | Metaphor | 0.579 | 210 |
 
-Combined Mann-Whitney p < 0.001. The direction — metonymy
-closer than metaphor — holds in every language without
+Combined Mann-Whitney p < 0.001. The direction (metonymy
+closer than metaphor) holds in every language without
 exception.
 
 ### 3.2 Four-category gradient
@@ -254,9 +254,9 @@ exception.
 
 All six pairwise comparisons significant at p < 0.001.
 
-The conventionalization gradient — dead versus live within
-each type — is larger than the structural gradient —
-metonymy versus metaphor within each lifecycle stage:
+The conventionalization gradient (dead versus live within
+each type) is larger than the structural gradient
+(metonymy versus metaphor within each lifecycle stage):
 
 - Dead minus live for metonymy: 0.818 − 0.565 = 0.253
 - Dead minus live for metaphor: 0.693 − 0.464 = 0.229
@@ -278,7 +278,7 @@ metonymy versus metaphor within each lifecycle stage:
 
 The strict four-category gradient holds in five of eight 
 languages. Failures occur exclusively at the dead metonymy 
-versus dead metaphor boundary — never at the live metonymy 
+versus dead metaphor boundary, never at the live metonymy 
 versus live metaphor boundary. The fundamental structural 
 distinction between live figures is robust across all 
 languages.
@@ -289,13 +289,13 @@ languages.
 An earlier run using culturally specific institutional pairs, e.g., Rosenbad for the prime minister's office, produced a completely flat result (p=1.000). Replacing these with instrument-for-person and container-for-contents pairs, e.g., pennan/författaren, scenen/teatern, restored the signal (live metonymy 0.582). Whether this reflects the model's limited exposure to Swedish political discourse or a genuine property of how these metonymic relations are encoded in Swedish text cannot be determined from this evidence.
 
 **Arabic.**
-Arabic shows an unexpected reversal in the dead/live metaphor ordering: dead metaphor (0.371) scores below live metaphor (0.505), the only language where this occurs. This could reflect genuine properties of Arabic figurative language, a pair construction asymmetry — our metaphor pairs use shorter phrases than the metonymy pairs — or differential training data coverage across registers and domains. We cannot distinguish between these explanations with the current design.
+Arabic shows an unexpected reversal in the dead/live metaphor ordering: dead metaphor (0.371) scores below live metaphor (0.505), the only language where this occurs. This could reflect genuine properties of Arabic figurative language, a pair construction asymmetry (our metaphor pairs use shorter phrases than the metonymy pairs), or differential training data coverage across registers and domains. We cannot distinguish between these explanations with the current design.
 
 **German.**
 Dead metaphor scores notably lower than the cross-language mean (0.534 versus 0.693). This could reflect properties of German morphological structure, the specific pairs chosen, or training data effects. We do not offer an interpretation beyond noting the anomaly.
 
 **Japanese.**
-An earlier run using journey and goal metaphor pairs — 道/人生 (road/life), 目標/成功 (goal/success) — produced near-zero separation between dead and live metaphor. Replacing these with animal-behavior and physical-abstract pairs restored the expected ordering. This suggests the earlier pairs were near-synonymous in the model's Japanese representation, though whether this reflects Japanese semantic structure or training data properties is unclear.
+An earlier run using journey and goal metaphor pairs (道/人生 [road/life], 目標/成功 [goal/success]) produced near-zero separation between dead and live metaphor. Replacing these with animal-behavior and physical-abstract pairs restored the expected ordering. This suggests the earlier pairs were near-synonymous in the model's Japanese representation, though whether this reflects Japanese semantic structure or training data properties is unclear.
 
 ### 3.5 Regression: type effect survives confound controls
 
@@ -314,14 +314,14 @@ Random intercept SD (language): 0.000. ICC ≈ 0.
 **Interpretation.** After controlling for word frequency,
 phrase-length asymmetry, and token-level surface overlap,
 the metonymy advantage (+0.098) remains large and
-significant. Neither frequency 
-nor length gap explains the type effect. The ICC of 
-effectively zero means language clustering accounts for 
-negligible variance — the result is cross-linguistically 
-uniform, and the original Mann-Whitney p-values were not 
-inflated by between-language pseudoreplication. The 
-lifecycle effect (−0.239) is more than twice the type 
-effect, consistent with section 3.2.
+significant. Neither frequency nor length gap explains 
+the type effect. The ICC of effectively zero means 
+language clustering accounts for negligible variance: 
+the result is cross-linguistically uniform, and the 
+original Mann-Whitney p-values were not inflated by 
+between-language pseudoreplication. The lifecycle effect 
+(−0.239) is more than twice the type effect, consistent 
+with section 3.2.
 
 ### 3.6 Neighbor geometry: contiguity vs substitutability
 
@@ -338,7 +338,7 @@ mirrors the first-order gradient:
 Metonymy is higher on both axes. The s₂ gap between types 
 is smaller than the s₁ gap, meaning metonymy's advantage 
 in direct proximity is larger than its advantage in 
-substitutability — consistent with Jakobson's account 
+substitutability, consistent with Jakobson's account 
 that metonymy is paradigmatically licensed by contiguity, 
 not by paradigmatic interchangeability.
 
@@ -372,7 +372,7 @@ The original embedding space has mean random-pair cosine
 
 The type effect remains positive and significant under all 
 three corrections including full whitening. Anisotropy was 
-slightly suppressing the effect in the original space — 
+slightly suppressing the effect in the original space: 
 mean-centring increases the metonymy coefficient to +0.197. 
 Under the most aggressive correction (whitening), the 
 coefficient shrinks to +0.079 but remains significant. 
@@ -437,8 +437,8 @@ is disclosed here; no further revisions will be made.
 
 **Co-occurrence confound (partially addressed).** The 
 frequency regression shows that word frequency does not 
-explain the type effect. However, PMI — joint co-occurrence 
-frequency of the specific pair — was not controlled, 
+explain the type effect. However, PMI (joint co-occurrence 
+frequency of the specific pair) was not controlled, 
 as computing it requires corpus-level counts across eight 
 languages. The contextual analysis (section 3.8) provides 
 indirect evidence that the live metonymy advantage is 
