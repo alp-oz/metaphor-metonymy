@@ -52,20 +52,22 @@ def prepare(df: pd.DataFrame) -> pd.DataFrame:
     df["is_metonymy"] = (df.structural_type == "metonymy").astype(float)
     df["is_live"]     = (df.lifecycle == "live").astype(float)
     # Standardise continuous predictors so coefficients are comparable
-    for col in ["log_freq_mean", "length_gap"]:
+    for col in ["log_freq_mean", "length_gap", "jaccard"]:
         mu, sd = df[col].mean(), df[col].std()
         df[f"{col}_z"] = (df[col] - mu) / sd
     return df
 
 
-def run_model(df: pd.DataFrame):
+def run_model(df: pd.DataFrame, include_jaccard: bool = True):
     """
     Fits:
-      sim ~ is_metonymy + is_live + log_freq_mean_z + length_gap_z
+      sim ~ is_metonymy + is_live + log_freq_mean_z + length_gap_z [+ jaccard_z]
       random intercept: language
     Returns fitted model.
     """
     formula = "sim ~ is_metonymy + is_live + log_freq_mean_z + length_gap_z"
+    if include_jaccard:
+        formula += " + jaccard_z"
     model = smf.mixedlm(formula, df, groups=df["language"])
     result = model.fit(reml=True, method="lbfgs")
     return result

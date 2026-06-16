@@ -75,6 +75,21 @@ def get_freq(term: str, lang_code: str) -> float:
         return -6.0
 
 
+def jaccard(term1: str, term2: str) -> float:
+    a, b = set(term1.lower().split()), set(term2.lower().split())
+    return len(a & b) / len(a | b) if (a | b) else 0.0
+
+
+def norm_edit(term1: str, term2: str) -> float:
+    import difflib
+    maxlen = max(len(term1), len(term2))
+    if maxlen == 0:
+        return 0.0
+    ops = difflib.SequenceMatcher(None, term1.lower(), term2.lower()).get_opcodes()
+    edits = sum(max(i2 - i1, j2 - j1) for tag, i1, i2, j1, j2 in ops if tag != "equal")
+    return edits / maxlen
+
+
 def add_covariates(df: pd.DataFrame, brysbaert: dict | None) -> pd.DataFrame:
     df = df.copy()
 
@@ -91,6 +106,10 @@ def add_covariates(df: pd.DataFrame, brysbaert: dict | None) -> pd.DataFrame:
     df["length1"] = df.term1.str.len()
     df["length2"] = df.term2.str.len()
     df["length_gap"] = (df.length1 - df.length2).abs()
+
+    log.info("Computing surface-similarity covariates ...")
+    df["jaccard"]   = [jaccard(t1, t2)   for t1, t2 in zip(df.term1, df.term2)]
+    df["norm_edit"] = [norm_edit(t1, t2) for t1, t2 in zip(df.term1, df.term2)]
 
     if brysbaert is not None:
         log.info("Computing concreteness covariates (English only) ...")
